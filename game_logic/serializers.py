@@ -9,5 +9,6 @@ class NewGameSerializer(serializers.Serializer):
 
 class NewMoveSerializer(serializers.Serializer):
     game_id = serializers.IntegerField(min_value=0)
-    new_move = serializers.CharField(max_length=10)
+    new_move = serializers.ListField(child=serializers.IntegerField(
+        min_value=0, max_value=26))
     player_color = serializers.ChoiceField(choices=['b', 'w'])
