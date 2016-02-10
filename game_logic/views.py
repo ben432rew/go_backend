@@ -9,9 +9,36 @@ from game_logic.models import Game
 from game_logic.serializers import NewGameSerializer, NewMoveSerializer
 
 
-def process_move(move, sgf):
-    """ return prohibited moves and moves that will capture """
-    return 'TODO-not_allowed', 'TODO-capture_moves'
+def is_game_over(sgf):
+    """ If two pass moves in a row, then game is over """
+    return False
+
+
+def calculate_score(sgf):
+    # TODO-Benny: Add territories, subtract captures, add komi here
+    score = {'score': {'b': 'TDOO', 'w': 'TODO'}}
+    return score
+
+
+def calculate_not_allowed(sgf):
+    return 'TODO-not_allowed'
+
+
+def calculate_capture_moves(sgf):
+    return 'TODO-capture_moves'
+
+
+def process_move(sgf):
+    """ Calculate illegal moves & possilbe captures """
+    game_is_over = is_game_over(sgf)
+    if game_is_over:
+        score = calculate_score(sgf)
+        return score
+    else:
+        not_allowed = calculate_not_allowed(sgf)
+        capture_moves = calculate_capture_moves(sgf)
+    return {'not_allowed': not_allowed,
+            'capture_moves': capture_moves}
 
 
 class NewGameView(APIView):
@@ -36,17 +63,22 @@ class NewMoveView(APIView):
         if serializer.is_valid():
             new_move = serializer.data.get('new_move')
             game = Game.objects.get(pk=serializer.data.get('game_id'))
+            # generate sgf string from game object, add new node, save
             sgf_string = str(game.sgf_file)
             game_sgf = Sgf_game.from_string(sgf_string)
-            not_allowed, capture_moves = process_move(new_move, game_sgf)
             new_node = game_sgf.extend_main_sequence()
             new_node.set_move(serializer.data.get('player_color'), new_move)
             game.sgf_file = game_sgf.serialise()
             game.save()
-            response = {
-                'game': game.sgf_file,
-                'not_allowed': not_allowed,
-                'capture_moves': capture_moves,
-            }
-            return Response(response, status=status.HTTP_200_OK)
+            processed = process_move(game_sgf)
+            # If game is over, save score and who the winner is
+            if 'score' in processed:
+                game.score_w = processed['score']['w']
+                game.score_b = processed['score']['b']
+                if game.score_w > game.score_b:
+                    game.winner = game.player_w
+                else:
+                    game.winner = game.player_b
+            processed['game'] = sgf_string
+            return Response(processed, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

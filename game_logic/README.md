@@ -55,9 +55,12 @@
 {
     "capture_moves": "TODO-capture_moves",
     "game": "(;FF[4]CA[UTF-8]GM[1]SZ[24];B[cw])\n",
-    "not_allowed": "TODO-not_allowed"
+    "not_allowed": "TODO-not_allowed",
+    "winner": "b"
 }
 ```
+
+`"winner"` paramter only sent on game end
 
 **Status Codes:**
 + `200` if successful
