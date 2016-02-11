@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -65,12 +63,11 @@ class NewGameView(APIView):
     def post(self, request):
         serializer = NewGameSerializer(data=request.data)
         if serializer.is_valid():
-            player_w = User.objects.get(pk=serializer.data.get('player_w_pk'))
-            player_b = User.objects.get(pk=serializer.data.get('player_b_pk'))
             new_game = Sgf_game(size=serializer.data.get('board_size'))
-            game = Game.objects.create(player_w=player_w,
-                                       player_b=player_b,
-                                       sgf_file=new_game.serialise())
+            game = Game.objects.create(
+                player_w_id=serializer.data.get('player_w_id'),
+                player_b_id=serializer.data.get('player_b_id'),
+                sgf_file=new_game.serialise())
             return Response({'game_id': game.pk}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

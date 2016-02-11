@@ -5,6 +5,7 @@ class NewGameSerializer(serializers.Serializer):
     player_w_pk = serializers.IntegerField(min_value=0)
     player_b_pk = serializers.IntegerField(min_value=0)
     board_size = serializers.IntegerField(max_value=26, min_value=1)
+    handicap = serializers.IntegerField(required=False)
 
 
 class NewMoveSerializer(serializers.Serializer):

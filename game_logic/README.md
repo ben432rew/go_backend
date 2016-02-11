@@ -11,12 +11,13 @@
 **Note(s):**
 + User auth to be decided
 + Board sizes can be size 9-26
++ handicap param is optional
 
 **Request:**
 ```json
 {
-    "player_w_pk": "2",
-    "player_b_pk": "1138",
+    "player_w_id": 2,
+    "player_b_id": 1138,
     "board_size": 26,
     "handicap": 1,
 }
