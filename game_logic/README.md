@@ -40,7 +40,7 @@
 **POST:** `/v1/move/`
 
 **Note(s):**
-+ User auth to be decided
++ `"winner"` parameter only sent on game end
 
 **Request:**
 ```json
@@ -61,7 +61,6 @@
 }
 ```
 
-`"winner"` paramter only sent on game end
 
 **Status Codes:**
 + `200` if successful
