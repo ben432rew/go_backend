@@ -18,6 +18,14 @@ def set_game_sgf(new_move, game, player_color):
 
 def is_game_over(sgf):
     """ If two pass moves in a row, then game is over """
+    g = Sgf_game.from_string(sgf)
+    # check last three moves because first move is intialized as (None, None)
+    last_three_moves = [node.get_move() for node in g.get_main_sequence()][-3:]
+    # game has to have at least two moves total
+    if len(last_three_moves) < 3:
+        return False
+    elif last_three_moves[0][1] is None and last_three_moves[1][1] is None:
+        return True
     return False
 
 
@@ -36,7 +44,7 @@ def calculate_capture_moves(sgf):
 
 
 def process_move(sgf):
-    """ Calculate illegal moves & possilbe captures """
+    """ If game is not over, calculate illegal moves & possible captures """
     game_is_over = is_game_over(sgf)
     if game_is_over:
         score = calculate_score(sgf)
@@ -48,13 +56,10 @@ def process_move(sgf):
             'capture_moves': capture_moves}
 
 
-def update_game(game, score):
-    game.score_w = score['w']
-    game.score_b = score['b']
-    if game.score_w > game.score_b:
-        game.winner = game.player_w
-    else:
-        game.winner = game.player_b
+def update_game(gam, score):
+    gam.score_w = score['w']
+    gam.score_b = score['b']
+    gam.winner = gam.player_w if gam.score_w > gam.score_b else gam.player_b
 
 
 class NewGameView(APIView):
